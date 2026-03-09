@@ -537,7 +537,9 @@ impl InflaterManaged {
             //  16 bits for match length "extra bits"
             //  16 bits for distance symbol
             //  16 bits for distance "extra bits"
-            if self.output.free_bytes() < TABLE_LOOKUP_LENGTH_MAX || input.available_bytes() < 8 {
+            // Use `input.buffer.len()` instead of `input.available_bytes()` to guarantee
+            // we have physical slice bytes available for `load_16bits_assume_input()` to consume.
+            if self.output.free_bytes() < TABLE_LOOKUP_LENGTH_MAX || input.buffer.len() < 8 {
                 return Ok((initial_free - self.output.free_bytes(), false));
             }
 
